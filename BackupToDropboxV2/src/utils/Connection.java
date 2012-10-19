@@ -38,8 +38,14 @@ public class Connection {
 
 	public static void doLink() throws DropboxException {
 
+		State state;
 		// Load state.
-		State state = State.load(STATE_FILE);
+		try {
+			state = State.load(STATE_FILE);
+		} catch (Exception ex) {
+			doReset("atpzm7nb23oa2ac", "udqftxi7nfiq553");
+			state = State.load(STATE_FILE);
+		}
 
 		WebAuthSession was = new WebAuthSession(state.appKey,
 				Session.AccessType.APP_FOLDER);
@@ -206,20 +212,21 @@ public class Connection {
 		try {
 			File file = new File(sourceFile);
 			inputStream = new FileInputStream(file);
-				
+
 			@SuppressWarnings("rawtypes")
-			DropboxAPI.ChunkedUploader uploader = client.getChunkedUploader(inputStream, file.length());
-			
-			while(!uploader.isComplete()){
+			DropboxAPI.ChunkedUploader uploader = client.getChunkedUploader(
+					inputStream, file.length());
+
+			while (!uploader.isComplete()) {
 				try {
 					uploader.upload();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
-			
-			if(uploader.isComplete()){
-			System.out.println("File is Uploaded!");
+
+			if (uploader.isComplete()) {
+				System.out.println("File is Uploaded!");
 			}
 		} catch (DropboxUnlinkedException e) {
 			// User has unlinked, ask them to link again here.
