@@ -8,6 +8,7 @@ import java.io.PrintStream;
 import java.util.Map;
 
 import com.dropbox.client2.DropboxAPI;
+import com.dropbox.client2.DropboxAPI.ChunkedUploader;
 import com.dropbox.client2.DropboxAPI.Entry;
 import com.dropbox.client2.exception.DropboxException;
 import com.dropbox.client2.exception.DropboxUnlinkedException;
@@ -214,7 +215,7 @@ public class Connection {
 			inputStream = new FileInputStream(file);
 
 			@SuppressWarnings("rawtypes")
-			DropboxAPI.ChunkedUploader uploader = client.getChunkedUploader(
+			ChunkedUploader uploader = client.getChunkedUploader(
 					inputStream, file.length());
 
 			while (!uploader.isComplete()) {
