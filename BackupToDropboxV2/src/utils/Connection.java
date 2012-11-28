@@ -7,10 +7,13 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.DropboxAPI.ChunkedUploader;
 import com.dropbox.client2.DropboxAPI.Entry;
 import com.dropbox.client2.exception.DropboxException;
+import com.dropbox.client2.exception.DropboxServerException;
 import com.dropbox.client2.exception.DropboxUnlinkedException;
 import com.dropbox.client2.session.AccessTokenPair;
 import com.dropbox.client2.session.AppKeyPair;
@@ -227,6 +230,15 @@ public class Connection {
 			}
 
 			if (uploader.isComplete()) {
+				 String parentRev = null;
+				    try {
+				        Entry metadata = client.metadata(sourceFile, 1, null, false, null);
+				        parentRev = metadata.rev;
+				    } catch (DropboxServerException e) {
+				        //if (e.error!= DropboxServerException._404_NOT_FOUND)
+				    	System.err.println(e);
+				    }
+				    uploader.finish(sourceFile, parentRev);
 				System.out.println("File is Uploaded!");
 			}
 		} catch (DropboxUnlinkedException e) {
